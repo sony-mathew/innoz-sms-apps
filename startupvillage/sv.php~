@@ -1,0 +1,57 @@
+<?php
+			   
+
+	if ( isset($_GET['mobile']) && isset($_GET['message']) )
+		{	
+			 
+			   // result page url
+			    $url_news = "http://www.startupvillage.in/news/" ;
+			    $url_blog = "http://www.startupvillage.in/svblog/" ;
+			   
+			    $flagg = 0 ;
+ 			    if( strpos($_GET['message'],'news') )		{	$flagg = 1 ; }
+ 				
+ 			    //setting curl parameters
+		 			
+		        $ch = curl_init();
+			    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Accepts all CAs 
+		            curl_setopt($ch, CURLOPT_URL, ($flagg?$url_news:$url_blog) ); 
+			    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
+			    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // Tells cURL to follow redirects 
+			    curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/4.0");
+		
+			    #to filter data from html file recieved
+			    $arr_remove = array("\r", "\n", "\t", "\s");
+			    $match = array();
+
+		        #Executing Curl to get the result page
+			    $output1 = curl_exec($ch); 
+
+			    #echo $output1;
+			    $result = '';
+
+
+		      	if( strlen($output1) > 2000 )
+			    	{          
+						$output1 = str_replace($arr_remove, '', $output1);
+						if( $flagg == 1 )
+							{	
+								preg_match_all('/<li>(.*?)<\\/a>/i', $output1 , $match) ;
+								$i = 0 ;
+								var_dump($match);
+							}
+						else
+							{							
+								preg_match_all('/<li><a(.*?)<\\/a><\\/li>/i', $output1 , $match) ;
+								$i = 0 ;
+								var_dump($match);
+							}
+            		}    
+			    echo '<response><content> '.$result.'(ynos)</content></response> ';
+   		}
+        
+   	 else
+   	 	{
+    		echo 'Sorry this request is not intended to process(error #45 : no parameters).(ynos)';
+    	}           			
+?> 
